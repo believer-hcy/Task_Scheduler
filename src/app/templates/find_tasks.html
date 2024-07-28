@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Find Tasks{% endblock %}
+
+{% block content %}
+  <h1>Find Tasks by Date</h1>
+  <form method="POST" action="{{ url_for('main.find_tasks_by_date') }}">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.date.label(class="form-label") }}
+      {{ form.date(class="form-control") }}
+    </div>
+    <button type="submit" class="btn btn-primary">Find Tasks</button>
+  </form>
+
+  {% if tasks is not none %}
+    <h2>Tasks for {{ form.date.data }}</h2>
+    {% if tasks %}
+      <ul class="list-group">
+        {% for task in tasks %}
+          <li class="list-group-item">
+            <strong>{{ task.title }}</strong>: {{ task.description }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No tasks found for the selected date.</p>
+    {% endif %}
+  {% endif %}
+{% endblock %}

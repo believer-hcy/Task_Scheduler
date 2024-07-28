@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">Welcome to Task Scheduler</h1>
+                    {% if current_user.is_authenticated %}
+                    <div class="d-flex justify-content-between mb-3">
+                        <h2>Your Tasks:</h2>
+                        <form class="mb-3">
+                            <label for="sortSelect" class="form-label">Sort by:</label>
+                            <select class="form-select" id="sortSelect" onchange="sortTasks(this.value)">
+                                <option value="default">Default</option>
+                                <option value="importance">Importance (High to Low)</option>
+                            </select>
+                        </form>
+                    </div>
+                        {% if tasks %}
+                            <ul class="list-group">
+                                {% for task in tasks %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="completed-{{ task.id }}" {% if task.completed %}checked{% endif %}>
+                                                <label class="form-check-label" for="completed-{{ task.id }}">
+                                                    <h5 class="mb-0">{{ task.title }}</h5>
+                                                </label>
+                                            </div>
+                                            <p class="text-muted">Description: {{ task.description }}</p>
+                                            <p class="text-muted">Deadline: {{ task.deadline }}</p>
+                                            <p class="text-muted">Status: {{ task.status }}</p>
+                                        </div>
+                                        <div>
+                                            <a href="{{ url_for('main.edit_task', id=task.id) }}" class="btn btn-outline-primary btn-sm me-2">Edit</a>
+                                            <form method="POST" action="{{ url_for('main.delete_task', id=task.id) }}" style="display:inline;">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-center">You have no tasks yet.</p>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-center">Please <a href="{{ url_for('main.login') }}">log in</a> to see your tasks.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    body {
+        background-image: url('{{ url_for("static", filename="image/3.png") }}');
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif; /* Adjust font family as needed */
+    }
+</style>
+{% endblock %}

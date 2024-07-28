@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Edit Task{% endblock %}
+{% block content %}
+<h1>Edit Task</h1>
+<form method="POST" action="{{ url_for('main.edit_task', id=task.id) }}">
+  {{ form.hidden_tag() }}
+  <div>
+    {{ form.title.label }}<br>
+    {{ form.title(size=32) }}<br>
+  </div>
+  <div>
+    {{ form.description.label }}<br>
+    {{ form.description(rows=4, cols=40) }}<br>
+  </div>
+  <div>
+    {{ form.deadline.label }}<br>
+    {{ form.deadline() }}<br>
+  </div>
+  <div>
+    {{ form.importance.label }}<br>
+    {{ form.importance() }}<br>
+  </div>
+  <div>
+    {{ form.status.label }}<br>
+    {{ form.status() }}<br>
+  </div>
+  <div>
+    {{ form.submit() }}
+  </div>
+</form>
+{% endblock %}

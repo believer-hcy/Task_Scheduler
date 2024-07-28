@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Tasks Due Today{% endblock %}
+
+{% block content %}
+  <h1>Tasks Due Today</h1>
+
+  {% if tasks %}
+    <ul class="list-group">
+      {% for task in tasks %}
+        <li class="list-group-item">
+          <strong>{{ task.title }}</strong>: {{ task.description }} (Due: {{ task.deadline }})
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No tasks due today.</p>
+  {% endif %}
+{% endblock %}

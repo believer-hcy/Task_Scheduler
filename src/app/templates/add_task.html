@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Add Task{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Add Task</h1>
+    <form method="POST" action="{{ url_for('main.add_task') }}" class="mt-4">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.title.label(class="form-label fw-bold") }}
+            {{ form.title(size=32, class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.description.label(class="form-label fw-bold") }}
+            {{ form.description(rows=4, cols=40, class="form-control") }}
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                {{ form.deadline.label(class="form-label fw-bold") }}
+                {{ form.deadline(size=20, class="form-control") }}
+            </div>
+            <div class="col-md-6">
+                {{ form.importance.label(class="form-label fw-bold d-block") }}
+                {{ form.importance(class="form-select") }}
+            </div>
+        </div>
+        <div class="mb-3">
+            {{ form.status.label(class="form-label fw-bold d-block") }}
+            {{ form.status(class="form-select") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    
+    <a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-3">Back to Index</a>
+</div>
+
+<style>
+    body {
+        background-image: url('{{ url_for("static", filename="image/4.png") }}');
+        background-size: cover;
+        background-position: center;
+    }
+
+    .form-label {
+        color: #f7e5def4; /* 设置表单标签文字颜色为白色 */
+    }
+</style>
+{% endblock %}
