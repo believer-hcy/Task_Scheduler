@@ -17,8 +17,9 @@ def index():
     #   print(task.title , task.description)
     currentDateTime = datetime.now()
     for task in tasks:
-        if task.deadline < currentDateTime:
-            task.status = 'Expired'
+        if task.status != 'Completed':
+            if task.deadline < currentDateTime:
+                task.status = 'Expired'
         
     return render_template('index.html', title='Home', tasks=tasks)
 
@@ -138,6 +139,15 @@ def delete_task(id):
     return redirect(url_for('main.index'))
 
 from sqlalchemy import extract
+
+@bp.route('/completed/<int:id>')
+@login_required
+def completed(id):
+    task = Task.query.get_or_404(id)
+    task.status = 'Completed'
+    db.session.commit()
+    flash('One task has been completed.')
+    return redirect(url_for('main.index'))
 
 @bp.route('/find_tasks', methods=['GET', 'POST'])
 @login_required
