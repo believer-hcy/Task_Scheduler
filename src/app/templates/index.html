@@ -12,10 +12,8 @@
                         <h2>Your Tasks:</h2>
                         <form class="mb-3">
                             <label for="sortSelect" class="form-label">Sort by:</label>
-                            <select class="form-select" id="sortSelect" onchange="sortTasks(this.value)">
-                                <option value="default">Default</option>
-                                <option value="importance">Importance (High to Low)</option>
-                            </select>
+                                <a href="{{ url_for('main.sortByDeadline') }}" class="btn btn-outline-primary btn-sm me-2">Deadline</a>
+                                <a href="{{ url_for('main.sortByImportance') }}" class="btn btn-outline-primary btn-sm me-2">Importance</a>
                         </form>
                     </div>
                         {% if tasks %}
