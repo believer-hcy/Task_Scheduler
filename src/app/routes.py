@@ -101,13 +101,16 @@ def add_task():
             if repeat == 'Everyday':
                 start_date = datetime.today().date()
                 end_date = deadline.date()
-
+                if end_date < start_date:
+                    flash('The date you input has passed!')
+                    return redirect(url_for('main.index'))
                 for i in range((end_date - start_date).days + 1):
                     current_date = start_date + timedelta(days=i)
                     new_task = Task(
                         user_id=current_user.id,
                         title=title,
                         description=description,
+                        repeat='Everyday',
                         deadline=datetime.combine(current_date, deadline.time()),
                         importance=importance,
                         status='Unstarted',
@@ -119,6 +122,7 @@ def add_task():
                     user_id=current_user.id,
                     title=title,
                     description=description,
+                    repeat=repeat,
                     deadline=deadline,
                     importance=importance,
                     status=status,
@@ -161,6 +165,10 @@ def edit_task(id):
         except SQLAlchemyError as e:
             db.session.rollback()
             flash('An error occurred while updating the task.', 'error')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in {getattr(form, field).label.text}: {error}", 'error')
 
     return render_template('edit_task.html', form=form, task=task)
 
