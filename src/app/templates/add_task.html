@@ -13,6 +13,10 @@
             {{ form.description.label(class="form-label fw-bold") }}
             {{ form.description(rows=4, cols=40, class="form-control") }}
         </div>
+        <div class="md-6">
+                {{ form.repeat.label(class="form-label fw-bold d-block") }}
+                {{ form.repeat(class="form-select") }}
+        </div>
         <div class="row mb-3">
             <div class="col-md-6">
                 {{ form.deadline.label(class="form-label fw-bold") }}
@@ -23,11 +27,17 @@
                 {{ form.importance(class="form-select") }}
             </div>
         </div>
-        <div class="mb-3">
-            {{ form.status.label(class="form-label fw-bold d-block") }}
-            {{ form.status(class="form-select") }}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                {{ form.status.label(class="form-label fw-bold d-block") }}
+                {{ form.status(class="form-select") }}
+            </div>
+            <div class="col-md-6">
+                {{ form.category.label(class="form-label fw-bold d-block") }}
+                {{ form.category(class="form-select") }}
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Add Task</button>
     </form>
     
     <a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-3">Back to Index</a>

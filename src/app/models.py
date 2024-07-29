@@ -23,10 +23,11 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140))
     description = db.Column(db.String(500))
+    repeat = db.Column(db.String(50))
     deadline = db.Column(db.DateTime)
     importance = db.Column(db.String(10))
     status = db.Column(db.String(20))
-    # valid = db.Column(db.Boolean, default=True)
+    category = db.Column(db.String(20))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -37,5 +38,4 @@ class Task(db.Model):
 def load_user(id):
     return User.query.get(int(id))
 
-from app import db
 

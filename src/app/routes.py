@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request 
+from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app.models import User, Task
@@ -8,12 +8,13 @@ from datetime import datetime, timedelta
 
 bp = Blueprint('main', __name__)
 
+
 @bp.route('/')
 @bp.route('/index')
 @login_required
 def index():
     tasks = Task.query.filter_by(user_id=current_user.id).all()
-    #for task in tasks:
+    # for task in tasks:
     #   print(task.title , task.description)
     currentDateTime = datetime.now()
     for task in tasks:
@@ -22,8 +23,8 @@ def index():
                 task.status = 'Expired'
     db.session.commit()
 
-        
     return render_template('index.html', title='Home', tasks=tasks, currentDateTime=currentDateTime)
+
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -42,15 +43,17 @@ def login():
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
+
 @bp.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
+
 @bp.route('/history', methods=['GET'])
 def history():
     tasks = Task.query.filter_by(user_id=current_user.id).all()
-    #for task in tasks:
+    # for task in tasks:
     #   print(task.title , task.description)
     currentDateTime = datetime.now()
     for task in tasks:
@@ -58,6 +61,7 @@ def history():
             task.status = 'Expired'
 
     return render_template('history.html', tasks=tasks)
+
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -73,11 +77,14 @@ def register():
         return redirect(url_for('main.login'))
     return render_template('register.html', title='Register', form=form)
 
+
 from sqlalchemy.exc import SQLAlchemyError  # 导入 SQLAlchemy 的异常类
 # routes.py (inside a blueprint folder, e.g., main)
 from flask import Blueprint, render_template
 
 main_bp = Blueprint('main', __name__)
+
+
 @bp.route('/add_task', methods=['GET', 'POST'])
 @login_required
 def add_task():
@@ -86,13 +93,44 @@ def add_task():
         try:
             title = form.title.data
             description = form.description.data
+            repeat = form.repeat.data
             deadline = form.deadline.data
             importance = form.importance.data
             status = form.status.data
+            category = form.category.data
 
-            new_task = Task(user_id=current_user.id, title=title, description=description, deadline=deadline, importance=importance, status=status)
-            
-            db.session.add(new_task)
+            if repeat == 'Everyday':
+                start_date = datetime.today().date()
+                end_date = deadline.date()
+                if end_date < start_date:
+                    flash('The date you input has passed!')
+                    return redirect(url_for('main.index'))
+                for i in range((end_date - start_date).days + 1):
+                    current_date = start_date + timedelta(days=i)
+                    new_task = Task(
+                        user_id=current_user.id,
+                        title=title,
+                        description=description,
+                        repeat='Everyday',
+                        deadline=datetime.combine(current_date, deadline.time()),
+                        importance=importance,
+                        status='Unstarted',
+                        category=category
+                    )
+                    db.session.add(new_task)
+            else:
+                new_task = Task(
+                    user_id=current_user.id,
+                    title=title,
+                    description=description,
+                    repeat=repeat,
+                    deadline=deadline,
+                    importance=importance,
+                    status=status,
+                    category=category
+                )
+                db.session.add(new_task)
+
             db.session.commit()
             flash('Task added successfully!', 'success')
             return redirect(url_for('main.index'))
@@ -102,11 +140,17 @@ def add_task():
             # 可以在这里记录日志 e.g., app.logger.error(str(e))
     return render_template('add_task.html', form=form)
 
-@bp.route('/edit_task<int:id>', methods=['GET', 'POST'])
+
+@bp.route('/edit_task/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_task(id):
     task = Task.query.get_or_404(id)
-    form = TaskForm()
+    if task.user_id != current_user.id:
+        flash('You do not have permission to edit this task.')
+        return redirect(url_for('main.index'))
+
+    form = TaskForm(obj=task)
+
     if form.validate_on_submit():
         try:
             task.title = form.title.data
@@ -114,19 +158,21 @@ def edit_task(id):
             task.deadline = form.deadline.data
             task.importance = form.importance.data
             task.status = form.status.data
+            task.category = form.category.data
 
-            # new_task = Task(user_id=current_user.id, title=title, description=description, deadline=deadline, importance=importance, status=status)
-            
-            # db.session.add(task)
             db.session.commit()
             flash('Task changed successfully!', 'success')
             return redirect(url_for('main.index'))
         except SQLAlchemyError as e:
-            db.session.rollback()  # 回滚数据库会话
-            flash('An error occurred while adding the task.', 'error')
-            # 可以在这里记录日志 e.g., app.logger.error(str(e))
+            db.session.rollback()
+            flash('An error occurred while updating the task.', 'error')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in {getattr(form, field).label.text}: {error}", 'error')
+
     return render_template('edit_task.html', form=form, task=task)
-    # return redirect(url_for('main.edit_task', id=task.id))
+
 
 @bp.route('/delete_task/<int:id>', methods=['POST'])
 @login_required
@@ -140,7 +186,9 @@ def delete_task(id):
     flash('Your task has been deleted.')
     return redirect(url_for('main.index'))
 
+
 from sqlalchemy import extract
+
 
 @bp.route('/completed/<int:id>')
 @login_required
@@ -157,7 +205,7 @@ def sortByDeadline():
     tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.deadline).all()
     #for task in tasks:
     #   print(task.title , task.description)
-        
+
     return render_template('index.html', title='Home', tasks=tasks)
 
 def priority(x):
@@ -200,6 +248,7 @@ def find_tasks_by_date():
             flash('An error occurred while querying tasks.', 'error')
             # 可以在这里记录日志 e.g., app.logger.error(str(e))
     return render_template('find_tasks.html', form=form, tasks=tasks)
+
 
 @bp.route('/tasks_due_today')
 @login_required

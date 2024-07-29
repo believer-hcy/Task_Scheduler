@@ -12,8 +12,8 @@
                         <h2>Your Tasks:</h2>
                         <form class="mb-3">
                             <label for="sortSelect" class="form-label">Sort by:</label>
-                                <a href="{{ url_for('main.sortByDeadline') }}" class="btn btn-outline-primary btn-sm me-2">Deadline</a>
-                                <a href="{{ url_for('main.sortByImportance') }}" class="btn btn-outline-primary btn-sm me-2">Importance</a>
+                            <a href="{{ url_for('main.sortByDeadline') }}" class="btn btn-outline-primary btn-sm me-2">Deadline</a>
+                            <a href="{{ url_for('main.sortByImportance') }}" class="btn btn-outline-primary btn-sm me-2">Importance</a>
                         </form>
                     </div>
                         {% if tasks %}
@@ -29,9 +29,9 @@
                                                     </label>
                                                 </ul>
                                                 {% else %}
-                                                <label class="form-check-label" for="completed-{{ task.id }}">
-                                                    <h5 class="mb-0">{{ task.title }}</h5>
-                                                </label>
+                                                    <label class="form-check-label" for="completed-{{ task.id }}">
+                                                        <h5 class="mb-0">{{ task.title }}</h5>
+                                                    </label>
                                                 {% endif %}
                                             </div>
                                             <p class="text-muted">Description: {{ task.description }}</p>

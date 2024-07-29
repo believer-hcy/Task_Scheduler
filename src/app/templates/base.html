@@ -25,16 +25,16 @@
               <a class="nav-link btn btn-success" href="{{ url_for('main.add_task') }}">Add Task</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link btn btn-success" href="{{ url_for('main.logout') }}">Logout</a>
+              <a class="nav-link btn btn-success" href="{{ url_for('main.find_tasks_by_date') }}">Find Tasks by Date</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link btn btn-success" href="{{ url_for('main.tasks_due_today') }}">Tasks Due Today</a>
             </li>
             <li class="nav-item">
               <a class="nav-link btn btn-success" href="{{ url_for('main.history') }}">History</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link btn btn-success" href="{{ url_for('main.find_tasks_by_date') }}">Find Tasks by Date</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link btn btn-success" href="{{ url_for('main.tasks_due_today') }}">Tasks Due Today</a>
+              <a class="nav-link btn btn-success" href="{{ url_for('main.logout') }}">Logout</a>
             </li>
           {% else %}
             <li class="nav-item">
