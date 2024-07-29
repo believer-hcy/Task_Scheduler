@@ -219,10 +219,8 @@ def completed(id):
 @login_required
 def sortByDeadline():
     tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.deadline).all()
-    # for task in tasks:
-    #   print(task.title , task.description)
-
-    return render_template('index.html', title='Home', tasks=tasks)
+    currentDateTime = datetime.now()
+    return render_template('index.html', title='Home', tasks=tasks, currentDateTime=currentDateTime)
 
 
 def priority(x):
@@ -238,13 +236,9 @@ def priority(x):
 @login_required
 def sortByImportance():
     tasks = Task.query.filter_by(user_id=current_user.id).all()
-    # for task in tasks:
-    #   print(task.title , task.description)    
-
-    # low medium high
     tasks.sort(key=priority, reverse=True)
-
-    return render_template('index.html', title='Home', tasks=tasks)
+    currentDateTime = datetime.now()
+    return render_template('index.html', title='Home', tasks=tasks, currentDateTime=currentDateTime)
 
 
 @bp.route('/find_tasks', methods=['GET', 'POST'])
