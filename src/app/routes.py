@@ -87,8 +87,8 @@ def add_task():
             deadline = form.deadline.data
             importance = form.importance.data
             status = form.status.data
-
-            new_task = Task(user_id=current_user.id, title=title, description=description, deadline=deadline, importance=importance, status=status)
+            category = form.category.data
+            new_task = Task(user_id=current_user.id, title=title, description=description, deadline=deadline, importance=importance, status=status, category=category)
             
             db.session.add(new_task)
             db.session.commit()
@@ -112,7 +112,7 @@ def edit_task(id):
             task.deadline = form.deadline.data
             task.importance = form.importance.data
             task.status = form.status.data
-
+            task.category = form.category.data
             # new_task = Task(user_id=current_user.id, title=title, description=description, deadline=deadline, importance=importance, status=status)
             
             # db.session.add(task)

@@ -26,7 +26,7 @@ class Task(db.Model):
     deadline = db.Column(db.DateTime)
     importance = db.Column(db.String(10))
     status = db.Column(db.String(20))
-    # valid = db.Column(db.Boolean, default=True)
+    category = db.Column(db.String(20))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 

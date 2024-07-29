@@ -33,6 +33,7 @@ class TaskForm(FlaskForm):
     deadline = DateTimeField('Deadline', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
     importance = SelectField('Importance', choices=[('Low', 'Low'), ('Medium', 'Medium'), ('High', 'High')], validators=[DataRequired()])
     status = SelectField('Status', choices=[('Unstarted', 'Unstarted'), ('Ongoing', 'Ongoing'), ('Completed', 'Completed'), ('Expired', 'Expired')], validators=[DataRequired()])
+    category = SelectField('Category', choices=[('Sports', 'Sports'), ('Studying', 'Studying'), ('Relaxing', 'Relaxing'), ('Others', 'Others')], validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 class DateForm(FlaskForm):
