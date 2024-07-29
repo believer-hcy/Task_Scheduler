@@ -21,8 +21,9 @@ def index():
         if task.status != 'Completed':
             if task.deadline < currentDateTime:
                 task.status = 'Expired'
+    db.session.commit()
 
-    return render_template('index.html', title='Home', tasks=tasks)
+    return render_template('index.html', title='Home', tasks=tasks, currentDateTime=currentDateTime)
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -198,6 +199,34 @@ def completed(id):
     flash('One task has been completed.')
     return redirect(url_for('main.index'))
 
+@bp.route('/sortByDeadline', methods=['GET', 'POST'])
+@login_required
+def sortByDeadline():
+    tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.deadline).all()
+    #for task in tasks:
+    #   print(task.title , task.description)
+
+    return render_template('index.html', title='Home', tasks=tasks)
+
+def priority(x):
+    if x.importance == 'High':
+        return 2
+    elif x.importance == 'Medium':
+        return 1
+    elif x.importance == 'Low':
+        return 0
+
+@bp.route('/sortByImportance', methods=['GET', 'POST'])
+@login_required
+def sortByImportance():
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    #for task in tasks:
+    #   print(task.title , task.description)    
+
+    #low medium high
+    tasks.sort(key=priority, reverse=True)
+
+    return render_template('index.html', title='Home', tasks=tasks)
 
 @bp.route('/find_tasks', methods=['GET', 'POST'])
 @login_required
