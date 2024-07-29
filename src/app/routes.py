@@ -9,6 +9,51 @@ from datetime import datetime, timedelta
 bp = Blueprint('main', __name__)
 
 
+@bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in {getattr(form, field).label.text}: {error}", 'danger')
+    return render_template('register.html', title='Register', form=form)
+
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None:
+            flash('Invalid username')
+            return redirect(url_for('main.login'))
+        if not user.check_password(form.password.data):
+            flash('Wrong password')
+            return redirect(url_for('main.login'))
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or not next_page.startswith('/'):
+            next_page = url_for('main.index')
+        return redirect(next_page)
+    return render_template('login.html', title='Sign In', form=form)
+
+
+@bp.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('main.index'))
+
+
 @bp.route('/')
 @bp.route('/index')
 @login_required
@@ -26,30 +71,6 @@ def index():
     return render_template('index.html', title='Home', tasks=tasks, currentDateTime=currentDateTime)
 
 
-@bp.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('main.login'))
-        login_user(user, remember=form.remember_me.data)
-        next_page = request.args.get('next')
-        if not next_page or not next_page.startswith('/'):
-            next_page = url_for('main.index')
-        return redirect(next_page)
-    return render_template('login.html', title='Sign In', form=form)
-
-
-@bp.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('main.index'))
-
-
 @bp.route('/history', methods=['GET'])
 def history():
     tasks = Task.query.filter_by(user_id=current_user.id).all()
@@ -61,21 +82,6 @@ def history():
             task.status = 'Expired'
 
     return render_template('history.html', tasks=tasks)
-
-
-@bp.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('main.login'))
-    return render_template('register.html', title='Register', form=form)
 
 
 from sqlalchemy.exc import SQLAlchemyError  # 导入 SQLAlchemy 的异常类
@@ -208,14 +214,16 @@ def completed(id):
     flash('One task has been completed.')
     return redirect(url_for('main.index'))
 
+
 @bp.route('/sortByDeadline', methods=['GET', 'POST'])
 @login_required
 def sortByDeadline():
     tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.deadline).all()
-    #for task in tasks:
+    # for task in tasks:
     #   print(task.title , task.description)
 
     return render_template('index.html', title='Home', tasks=tasks)
+
 
 def priority(x):
     if x.importance == 'High':
@@ -225,17 +233,19 @@ def priority(x):
     elif x.importance == 'Low':
         return 0
 
+
 @bp.route('/sortByImportance', methods=['GET', 'POST'])
 @login_required
 def sortByImportance():
     tasks = Task.query.filter_by(user_id=current_user.id).all()
-    #for task in tasks:
+    # for task in tasks:
     #   print(task.title , task.description)    
 
-    #low medium high
+    # low medium high
     tasks.sort(key=priority, reverse=True)
 
     return render_template('index.html', title='Home', tasks=tasks)
+
 
 @bp.route('/find_tasks', methods=['GET', 'POST'])
 @login_required
