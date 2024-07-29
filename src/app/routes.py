@@ -4,7 +4,7 @@ from app import db
 from app.models import User, Task
 from app.forms import LoginForm, RegistrationForm, TaskForm, DateForm
 from flask import Blueprint
-from datetime import datetime
+from datetime import datetime, timedelta
 
 bp = Blueprint('main', __name__)
 
@@ -21,8 +21,9 @@ def index():
             if task.deadline < currentDateTime:
                 task.status = 'Expired'
     db.session.commit()
+
         
-    return render_template('index.html', title='Home', tasks=tasks)
+    return render_template('index.html', title='Home', tasks=tasks, currentDateTime=currentDateTime)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():

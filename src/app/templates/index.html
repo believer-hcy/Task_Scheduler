@@ -22,9 +22,17 @@
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
                                             <div class="form-check">
+                                                {% if (task.deadline - currentDateTime).days <= 1 %}
+                                                <ul id="nav">
+                                                    <label class="form-check-label" for="completed-{{ task.id }}">
+                                                        <h5 class="mb-0">{{ task.title }}</h5>
+                                                    </label>
+                                                </ul>
+                                                {% else %}
                                                 <label class="form-check-label" for="completed-{{ task.id }}">
                                                     <h5 class="mb-0">{{ task.title }}</h5>
                                                 </label>
+                                                {% endif %}
                                             </div>
                                             <p class="text-muted">Description: {{ task.description }}</p>
                                             <p class="text-muted">Deadline: {{ task.deadline }}</p>
@@ -61,6 +69,14 @@
         align-items: center;
         justify-content: center;
         font-family: Arial, sans-serif; /* Adjust font family as needed */
+    }
+    #nav > label::before{
+        content: "";
+        width: 30px;
+        height: 30px;
+        float: left;
+        background-image: url('{{ url_for("static", filename="image/emergency.png") }}');
+        background-size: 30px 30px;
     }
 </style>
 {% endblock %}
