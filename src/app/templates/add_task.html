@@ -13,6 +13,10 @@
             {{ form.description.label(class="form-label fw-bold") }}
             {{ form.description(rows=4, cols=40, class="form-control") }}
         </div>
+        <div class="md-6">
+                {{ form.repeat.label(class="form-label fw-bold d-block") }}
+                {{ form.repeat(class="form-select") }}
+        </div>
         <div class="row mb-3">
             <div class="col-md-6">
                 {{ form.deadline.label(class="form-label fw-bold") }}

@@ -30,6 +30,7 @@ class RegistrationForm(FlaskForm):
 class TaskForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
+    repeat = SelectField('Repeat', choices=[('None', 'None'), ('Everyday', 'Everyday')], validators=[DataRequired()])
     deadline = DateTimeField('Deadline', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
     importance = SelectField('Importance', choices=[('Low', 'Low'), ('Medium', 'Medium'), ('High', 'High')], validators=[DataRequired()])
     status = SelectField('Status', choices=[('Unstarted', 'Unstarted'), ('Ongoing', 'Ongoing'), ('Completed', 'Completed'), ('Expired', 'Expired')], validators=[DataRequired()])
