@@ -104,7 +104,10 @@ def add_task():
 @login_required
 def edit_task(id):
     task = Task.query.get_or_404(id)
-    form = TaskForm()
+    if task.user_id != current_user.id:
+        flash('You do not have permission to edit this task.')
+        return redirect(url_for('main.index'))
+    form = TaskForm(obj=task)
     if form.validate_on_submit():
         try:
             task.title = form.title.data
