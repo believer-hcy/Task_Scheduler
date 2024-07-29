@@ -35,6 +35,7 @@ class TaskForm(FlaskForm):
     importance = SelectField('Importance', choices=[('Low', 'Low'), ('Medium', 'Medium'), ('High', 'High')], validators=[DataRequired()])
     status = SelectField('Status', choices=[('Unstarted', 'Unstarted'), ('Ongoing', 'Ongoing'), ('Completed', 'Completed'), ('Expired', 'Expired')], validators=[DataRequired()])
     category = SelectField('Category', choices=[('Sports', 'Sports'), ('Studying', 'Studying'), ('Relaxing', 'Relaxing'), ('Others', 'Others')], validators=[DataRequired()])
+    valid = BooleanField('Valid', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 class DateForm(FlaskForm):

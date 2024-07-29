@@ -13,7 +13,7 @@ bp = Blueprint('main', __name__)
 @bp.route('/index')
 @login_required
 def index():
-    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    tasks = Task.query.filter_by(user_id=current_user.id, valid=True).all()
     # for task in tasks:
     #   print(task.title , task.description)
     currentDateTime = datetime.now()
@@ -89,6 +89,7 @@ main_bp = Blueprint('main', __name__)
 @login_required
 def add_task():
     form = TaskForm()
+    form.valid.data = True
     if form.validate_on_submit():
         try:
             title = form.title.data
@@ -98,6 +99,7 @@ def add_task():
             importance = form.importance.data
             status = form.status.data
             category = form.category.data
+            valid = True
 
             if repeat == 'Everyday':
                 start_date = datetime.today().date()
@@ -115,7 +117,8 @@ def add_task():
                         deadline=datetime.combine(current_date, deadline.time()),
                         importance=importance,
                         status='Unstarted',
-                        category=category
+                        category=category,
+                        valid=valid
                     )
                     db.session.add(new_task)
             else:
@@ -127,7 +130,8 @@ def add_task():
                     deadline=deadline,
                     importance=importance,
                     status=status,
-                    category=category
+                    category=category,
+                    valid=valid
                 )
                 db.session.add(new_task)
 
@@ -138,6 +142,10 @@ def add_task():
             db.session.rollback()  # 回滚数据库会话
             flash('An error occurred while adding the task.', 'error')
             # 可以在这里记录日志 e.g., app.logger.error(str(e))
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in {getattr(form, field).label.text}: {error}", 'error')
     return render_template('add_task.html', form=form)
 
 
@@ -150,7 +158,7 @@ def edit_task(id):
         return redirect(url_for('main.index'))
 
     form = TaskForm(obj=task)
-
+    form.valid.data = True
     if form.validate_on_submit():
         try:
             task.title = form.title.data
@@ -195,6 +203,7 @@ from sqlalchemy import extract
 def completed(id):
     task = Task.query.get_or_404(id)
     task.status = 'Completed'
+    task.valid = False
     db.session.commit()
     flash('One task has been completed.')
     return redirect(url_for('main.index'))

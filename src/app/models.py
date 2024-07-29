@@ -28,6 +28,7 @@ class Task(db.Model):
     importance = db.Column(db.String(10))
     status = db.Column(db.String(20))
     category = db.Column(db.String(20))
+    valid = db.Column(db.Boolean, default=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
