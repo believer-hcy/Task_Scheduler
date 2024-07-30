@@ -20,11 +20,12 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('main.login'))
     else:
         for field, errors in form.errors.items():
             for error in errors:
                 flash(f"Error in {getattr(form, field).label.text}: {error}", 'danger')
-    return render_template('register.html', title='Register', form=form)
+        return render_template('register.html', title='Register', form=form)
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -59,28 +60,26 @@ def logout():
 @login_required
 def index():
     tasks = Task.query.filter_by(user_id=current_user.id, valid=True).all()
-    # for task in tasks:
-    #   print(task.title , task.description)
     currentDateTime = datetime.now()
+    '''
     for task in tasks:
         if task.status != 'Completed':
             if task.deadline < currentDateTime:
                 task.status = 'Expired'
-    db.session.commit()
-
+    db.session.commit()'''
+    check_status()
     return render_template('index.html', title='Home', tasks=tasks, currentDateTime=currentDateTime)
 
 
 @bp.route('/history', methods=['GET'])
 def history():
     tasks = Task.query.filter_by(user_id=current_user.id).all()
-    # for task in tasks:
-    #   print(task.title , task.description)
     currentDateTime = datetime.now()
+    '''
     for task in tasks:
         if task.deadline < currentDateTime:
-            task.status = 'Expired'
-
+            task.status = 'Expired'''''
+    check_status()
     return render_template('history.html', tasks=tasks)
 
 
@@ -141,8 +140,9 @@ def add_task():
                 )
                 db.session.add(new_task)
 
-            db.session.commit()
             flash('Task added successfully!', 'success')
+            check_status()
+            db.session.commit()
             return redirect(url_for('main.index'))
         except SQLAlchemyError as e:
             db.session.rollback()  # 回滚数据库会话
@@ -174,9 +174,15 @@ def edit_task(id):
             task.status = form.status.data
             task.category = form.category.data
 
-            db.session.commit()
             flash('Task changed successfully!', 'success')
-            return redirect(url_for('main.index'))
+            check_status()
+            db.session.commit()
+
+            next_page = request.args.get('next')
+            if next_page == 'main.index':
+                return redirect(url_for('main.index'))
+            elif next_page == 'main.history':
+                return redirect(url_for('main.history'))
         except SQLAlchemyError as e:
             db.session.rollback()
             flash('An error occurred while updating the task.', 'error')
@@ -198,7 +204,11 @@ def delete_task(id):
     db.session.delete(task)
     db.session.commit()
     flash('Your task has been deleted.')
-    return redirect(url_for('main.index'))
+    next_page = request.args.get('next')
+    if next_page == 'main.index':
+        return redirect(url_for('main.index'))
+    elif next_page == 'main.history':
+        return redirect(url_for('main.history'))
 
 
 from sqlalchemy import extract
@@ -209,9 +219,10 @@ from sqlalchemy import extract
 def completed(id):
     task = Task.query.get_or_404(id)
     task.status = 'Completed'
-    task.valid = False
+    #task.valid = False
+    check_status()
     db.session.commit()
-    flash('One task has been completed.')
+    #flash('One task has been completed.')
     return redirect(url_for('main.index'))
 
 
@@ -281,3 +292,18 @@ def tasks_due_today():
         # 可以在这里记录日志 e.g., app.logger.error(str(e))
         tasks = []
     return render_template('tasks_due_today.html', tasks=tasks)
+
+def check_status():
+    tasks = Task.query.filter_by(user_id=current_user.id, valid=True).all()
+    currentDateTime = datetime.now()
+    for task in tasks:
+        form = TaskForm(obj=task)
+        if task.status == 'Completed':
+            task.valid = False
+            flash('One task has been completed.')
+        else:
+            if task.deadline < currentDateTime:
+                task.status = 'Expired'
+            elif task.status == 'Expired':
+                task.status = 'Unstarted'
+    db.session.commit()
