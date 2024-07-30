@@ -38,11 +38,8 @@
                                                     </label>
                                             </div>
                                             <p class="text-muted description-clamp">Description: {{ task.description }}</p>
-                                            <p class="text-muted">Deadline: {{ task.deadline }}</p>
-                                            <p class="text-muted">Status: {{ task.status }}</p>
-                                            <p class="text-muted">Importance: {{ task.importance }}</p>
                                             <p class="text-muted">
-                                                Category: 
+                                                Category:
                                                 {% if task.category == 'Sports' %}
                                                 <img src="../static/image/sport.png" width="50" height="50" align="center">
                                                 {% endif %}
@@ -58,8 +55,10 @@
                                             </p>
                                         </div>
                                         <div>
+                                            <p class="text-muted">Deadline: {{ task.deadline }}</p>
                                             <p class="text-muted">Importance: {{ task.importance }}</p>
-                                            <p class="text-muted">Category: {{ task.category }}</p>
+                                            <p class="text-muted">Status: {{ task.status }}</p>
+
                                         </div>
                                         <div>
                                             <a href="{{ url_for('main.completed', id=task.id) }}" class="btn btn-outline-primary btn-sm me-2">Completed</a>
