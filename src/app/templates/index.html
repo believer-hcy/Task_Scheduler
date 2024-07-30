@@ -37,6 +37,22 @@
                                             <p class="text-muted">Description: {{ task.description }}</p>
                                             <p class="text-muted">Deadline: {{ task.deadline }}</p>
                                             <p class="text-muted">Status: {{ task.status }}</p>
+                                            <p class="text-muted">Importance: {{ task.importance }}</p>
+                                            <p class="text-muted">
+                                                Category: 
+                                                {% if task.category == 'Sports' %}
+                                                <img src="../static/image/sport.png" width="50" height="50" align="center">
+                                                {% endif %}
+                                                {% if task.category == 'Studying' %}
+                                                <img src="../static/image/study.png" width="50" height="50" align="center">
+                                                {% endif %}
+                                                {% if task.category == 'Relaxing' %}
+                                                <img src="../static/image/relax.png" width="50" height="50" align="center">
+                                                {% endif %}
+                                                {% if task.category == 'Others' %}
+                                                {{ task.category }}
+                                                {% endif %}
+                                            </p>
                                         </div>
                                         <div>
                                             <a href="{{ url_for('main.completed', id=task.id) }}" class="btn btn-outline-primary btn-sm me-2">Completed</a>
