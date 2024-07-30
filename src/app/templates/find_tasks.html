@@ -3,28 +3,47 @@
 {% block title %}Find Tasks{% endblock %}
 
 {% block content %}
-  <h1>Find Tasks by Date</h1>
-  <form method="POST" action="{{ url_for('main.find_tasks_by_date') }}">
-    {{ form.hidden_tag() }}
-    <div class="mb-3">
-      {{ form.date.label(class="form-label") }}
-      {{ form.date(class="form-control") }}
-    </div>
-    <button type="submit" class="btn btn-primary">Find Tasks</button>
-  </form>
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">Find Tasks by Date</h1>
+                    <form method="POST" action="{{ url_for('main.find_tasks_by_date') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form.date.label(class="form-label") }}
+                            {{ form.date(class="form-control") }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Find Tasks</button>
+                    </form>
 
-  {% if tasks is not none %}
-    <h2>Tasks for {{ form.date.data }}</h2>
-    {% if tasks %}
-      <ul class="list-group">
-        {% for task in tasks %}
-          <li class="list-group-item">
-            <strong>{{ task.title }}</strong>: {{ task.description }}
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No tasks found for the selected date.</p>
-    {% endif %}
-  {% endif %}
+                    {% if tasks %}
+                        <h2 class="mt-4">Tasks for {{ form.date.data }}</h2>
+                        <ul class="list-group">
+                            {% for task in tasks %}
+                                <li class="list-group-item">
+                                    <strong>{{ task.title }}</strong>: {{ task.description }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="mt-4">No tasks found for the selected date.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+  body {
+      background-image: url('{{ url_for("static", filename="image/6.png") }}');
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+</style>
 {% endblock %}
