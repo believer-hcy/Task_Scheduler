@@ -178,11 +178,7 @@ def edit_task(id):
             check_status()
             db.session.commit()
 
-            next_page = request.args.get('next')
-            if next_page == 'main.index':
-                return redirect(url_for('main.index'))
-            elif next_page == 'main.history':
-                return redirect(url_for('main.history'))
+            return redirect(url_for('main.index'))
         except SQLAlchemyError as e:
             db.session.rollback()
             flash('An error occurred while updating the task.', 'error')
@@ -297,7 +293,6 @@ def check_status():
     tasks = Task.query.filter_by(user_id=current_user.id, valid=True).all()
     currentDateTime = datetime.now()
     for task in tasks:
-        form = TaskForm(obj=task)
         if task.status == 'Completed':
             task.valid = False
             flash('One task has been completed.')

@@ -19,22 +19,25 @@
                         {% if tasks %}
                             <ul class="list-group">
                                 {% for task in tasks %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center {% if (task.deadline - currentDateTime).days <= 1 and task.status != 'Expired' %} bg-warning {% endif %}">
                                         <div>
                                             <div class="form-check">
-                                                {% if (task.deadline - currentDateTime).days <= 1 and task.status != 'Expired' %}
+                                                <!--{% if (task.deadline - currentDateTime).days <= 1 and task.status != 'Expired' %}
                                                 <ul id="nav">
-                                                    <label class="form-check-label" for="completed-{{ task.id }}">
+                                                    <label class="form-check-label text-truncate" for="completed-{{ task.id }}" style="max-width: 300px;">
                                                         <h5 class="mb-0">{{ task.title }}</h5>
                                                     </label>
                                                 </ul>
                                                 {% else %}
-                                                    <label class="form-check-label" for="completed-{{ task.id }}">
+                                                    <label class="form-check-label text-truncate" for="completed-{{ task.id }}" style="max-width: 1000px;">
                                                         <h5 class="mb-0">{{ task.title }}</h5>
                                                     </label>
-                                                {% endif %}
+                                                {% endif %}-->
+                                                <label class="form-check-label title-clamp" for="completed-{{ task.id }}">
+                                                        <h5 class="mb-0">{{ task.title }}</h5>
+                                                    </label>
                                             </div>
-                                            <p class="text-muted">Description: {{ task.description }}</p>
+                                            <p class="text-muted description-clamp">Description: {{ task.description }}</p>
                                             <p class="text-muted">Deadline: {{ task.deadline }}</p>
                                             <p class="text-muted">Status: {{ task.status }}</p>
                                             <p class="text-muted">Importance: {{ task.importance }}</p>
@@ -55,8 +58,12 @@
                                             </p>
                                         </div>
                                         <div>
+                                            <p class="text-muted">Importance: {{ task.importance }}</p>
+                                            <p class="text-muted">Category: {{ task.category }}</p>
+                                        </div>
+                                        <div>
                                             <a href="{{ url_for('main.completed', id=task.id) }}" class="btn btn-outline-primary btn-sm me-2">Completed</a>
-                                            <a href="{{ url_for('main.edit_task', id=task.id, next='main.history') }}" class="btn btn-outline-primary btn-sm me-2">Edit</a>
+                                            <a href="{{ url_for('main.edit_task', id=task.id) }}" class="btn btn-outline-primary btn-sm me-2">Edit</a>
                                                 <form method="POST" action="{{ url_for('main.delete_task', id=task.id, next='main.index') }}" style="display:inline;" onsubmit="return confirm('Confirm delete?');">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                                 </form>
@@ -93,6 +100,24 @@
         float: left;
         background-image: url('{{ url_for("static", filename="image/emergency.png") }}');
         background-size: 30px 30px;
+    }
+</style>
+<style>
+    .title-clamp {
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 300px;
+    }
+    .description-clamp {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+        max-width: 300px;
     }
 </style>
 {% endblock %}
